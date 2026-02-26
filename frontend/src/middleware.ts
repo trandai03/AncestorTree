@@ -1,8 +1,8 @@
 /**
  * @project AncestorTree
- * @file src/middleware.ts
- * @description Auth middleware for protected routes — Next.js 16 convention
- * @version 1.2.0
+ * @file src/proxy.ts  <-- Lưu ý đổi tên file từ middleware.ts thành proxy.ts theo chuẩn Next 16 nhé
+ * @description Auth middleware for protected routes
+ * @version 1.2.1
  * @updated 2026-02-26
  */
 
@@ -11,10 +11,9 @@ import type { NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
 const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password'];
-// All main app routes require authentication to protect personal data.
-// Unauthenticated requests to these paths are redirected to /login.
+
 const authRequiredPaths = [
-  '/',
+  '/', // Trang chủ
   '/people', '/tree', '/directory', '/events',
   '/achievements', '/charter', '/cau-duong', '/contributions',
   '/documents', '/fund', '/admin',
@@ -50,9 +49,6 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // getUser() can hang on Supabase free tier cold start.
-  // Race with a 5-second timeout: on timeout treat user as unauthenticated
-  // so public pages always load, and protected pages redirect to /login.
   let user: { id: string } | null = null;
   try {
     const result = await Promise.race([
@@ -64,34 +60,45 @@ export async function middleware(request: NextRequest) {
     user = null;
   }
 
-  // Redirect unauthenticated users from protected pages
-  if (!user && authRequiredPaths.some(path => pathname.startsWith(path))) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
-  }
+  // 1. Phân loại chính xác đường dẫn hiện tại
+  const isPublicPath = publicPaths.some(path => pathname.startsWith(path));
+  const isAuthRequired = authRequiredPaths.some(path => 
+    path === '/' ? pathname === '/' : pathname.startsWith(path) // Sửa lỗi nhận diện nhầm '/'
+  );
 
-  // Admin routes require admin or editor role
-  if (user && pathname.startsWith('/admin')) {
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('user_id', user.id)
-        .single();
-
-      if (profile?.role !== 'admin' && profile?.role !== 'editor') {
-        return NextResponse.redirect(new URL('/', request.url));
-      }
-    } catch {
-      // On timeout/error, deny access to admin
+  // 2. Xử lý User CHƯA đăng nhập
+  if (!user) {
+    // Nếu vào trang cần bảo vệ (và không phải public path), đẩy về login
+    if (isAuthRequired && !isPublicPath) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  } 
+  
+  // 3. Xử lý User ĐÃ đăng nhập
+  if (user) {
+    // Không cho vào lại các trang public (login/register), đẩy về trang chủ
+    if (isPublicPath) {
       return NextResponse.redirect(new URL('/', request.url));
     }
-  }
 
-  // Redirect authenticated users away from auth pages
-  if (user && publicPaths.some(path => pathname.startsWith(path))) {
-    return NextResponse.redirect(new URL('/', request.url));
+    // Kiểm tra quyền Admin
+    if (pathname.startsWith('/admin')) {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('user_id', user.id)
+          .single();
+
+        if (profile?.role !== 'admin' && profile?.role !== 'editor') {
+          return NextResponse.redirect(new URL('/', request.url));
+        }
+      } catch {
+        return NextResponse.redirect(new URL('/', request.url));
+      }
+    }
   }
 
   return response;
