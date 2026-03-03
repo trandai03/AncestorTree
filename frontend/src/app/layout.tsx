@@ -13,6 +13,7 @@ import { AuthProvider } from "@/components/auth/auth-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { CLAN_NAME, CLAN_FULL_NAME } from "@/lib/clan-config";
 
 const inter = Inter({
   subsets: ["latin", "vietnamese"],
@@ -21,14 +22,14 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Gia Phả Điện Tử - Họ Trần xã Hưng Hòa',
-    template: '%s | Gia Phả Họ Trần',
+    default: `Gia Phả Điện Tử - ${CLAN_FULL_NAME}`,
+    template: `%s | Gia Phả ${CLAN_NAME}`,
   },
-  description: 'Phần mềm quản lý gia phả điện tử cho Họ Trần xã Hưng Hòa. Lưu trữ thông tin dòng họ, cây gia phả, lịch giỗ chạp.',
-  keywords: ['gia phả', 'gia phả điện tử', 'Họ Trần', 'xã Hưng Hòa', 'dòng họ', 'cây gia phả', 'phả hệ'],
-  authors: [{ name: 'Họ Trần xã Hưng Hòa' }],
+  description: `Phần mềm quản lý gia phả điện tử cho ${CLAN_FULL_NAME}. Lưu trữ thông tin dòng họ, cây gia phả, lịch giỗ chạp.`,
+  keywords: ['gia phả', 'gia phả điện tử', CLAN_NAME, 'dòng họ', 'cây gia phả', 'phả hệ'],
+  authors: [{ name: CLAN_FULL_NAME }],
   openGraph: {
-    title: 'Gia Phả Điện Tử - Họ Trần xã Hưng Hòa',
+    title: `Gia Phả Điện Tử - ${CLAN_FULL_NAME}`,
     description: 'Gìn giữ tinh hoa - Tiếp bước cha ông',
     type: 'website',
     locale: 'vi_VN',

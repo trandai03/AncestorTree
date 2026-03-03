@@ -104,6 +104,10 @@ export interface Profile {
   /** FK → people.id: subtree root this user can edit (null = global editor) */
   edit_root_person_id?: string;
   avatar_url?: string;
+  is_verified?: boolean;
+  can_verify_members?: boolean;
+  is_suspended?: boolean;
+  suspension_reason?: string;
   created_at: string;
   updated_at: string;
 }
@@ -285,6 +289,39 @@ export interface ClanArticle {
 export type CreateClanArticleInput = Omit<ClanArticle, 'id' | 'created_at' | 'updated_at'>;
 export type UpdateClanArticleInput = Partial<CreateClanArticleInput>;
 
+// ─── Clan Document (Kho tài liệu) ───────────────────────────────────────────
+
+export type DocumentCategory = 'anh_lich_su' | 'giay_to' | 'ban_do' | 'video' | 'bai_viet' | 'khac';
+
+export const DOCUMENT_CATEGORY_LABELS: Record<DocumentCategory, string> = {
+  anh_lich_su: 'Ảnh lịch sử',
+  giay_to: 'Giấy tờ',
+  ban_do: 'Bản đồ',
+  video: 'Video',
+  bai_viet: 'Bài viết',
+  khac: 'Khác',
+};
+
+export interface ClanDocument {
+  id: string;
+  title: string;
+  description?: string;
+  file_url: string;
+  file_type?: string;
+  file_size?: number;
+  category: DocumentCategory;
+  tags?: string;
+  person_id?: string;
+  uploaded_by?: string;
+  /** 0=public, 1=members only, 2=admin only */
+  privacy_level: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export type CreateClanDocumentInput = Omit<ClanDocument, 'id' | 'created_at' | 'updated_at'>;
+export type UpdateClanDocumentInput = Partial<CreateClanDocumentInput>;
+
 // ─── Cầu đương (Ceremony Rotation) ───────────────────────────────────────────
 
 export interface CauDuongPool {
@@ -354,6 +391,24 @@ export interface PersonRelations {
     children: Person[];
   }>;
 }
+
+// ─── Clan Settings ────────────────────────────────────────────────────────────
+
+export interface ClanSettings {
+  id: string;
+  clan_name: string;
+  clan_full_name: string;
+  clan_founding_year?: number;
+  clan_origin?: string;
+  clan_patriarch?: string;
+  clan_description?: string;
+  contact_email?: string;
+  contact_phone?: string;
+  updated_at: string;
+  updated_by?: string;
+}
+
+export type UpdateClanSettingsInput = Partial<Omit<ClanSettings, 'id' | 'updated_at' | 'updated_by'>>;
 
 // ─── Zodiac ───────────────────────────────────────────────────────────────────
 
