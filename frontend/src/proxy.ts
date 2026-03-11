@@ -39,6 +39,7 @@ const RATE_LIMITS: Record<string, { max: number; windowMs: number }> = {
   '/register':        { max: 10, windowMs: 60_000 },   // 10 page loads/min
   '/forgot-password': { max:  6, windowMs: 300_000 },  // 6 loads/5 min
   '/reset-password':  { max: 10, windowMs: 60_000 },   // 10 page loads/min
+  '/register-member': { max:  3, windowMs: 3_600_000 }, // 3 submissions/hour (anti-spam)
 };
 
 function _getClientIp(req: NextRequest): string {
@@ -73,7 +74,7 @@ function _checkRateLimit(ip: string, pathname: string): { allowed: boolean; retr
 }
 
 // Public paths: accessible without authentication (auth pages + landing + debug)
-const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password', '/welcome', '/api/debug'];
+const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password', '/welcome', '/council', '/ancestral-hall', '/register-member', '/api/debug', '/api/cron'];
 // Auth pages only: authenticated users are redirected away from these (not from /welcome or /api/*)
 const authPagePaths = ['/login', '/register', '/forgot-password', '/reset-password'];
 // Accessible when authenticated but NOT yet verified by admin
@@ -84,6 +85,7 @@ const authRequiredPaths = [
   '/people', '/tree', '/directory', '/events',
   '/achievements', '/charter', '/cau-duong', '/contributions',
   '/documents', '/fund', '/admin', '/help', '/settings',
+  '/relationship', '/stats', '/feed', '/notifications',
 ];
 
 // Structured logger — writes to stdout (visible in `docker compose logs -f app`)

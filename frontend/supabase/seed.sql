@@ -136,11 +136,22 @@ INSERT INTO public.people (id, handle, display_name, gender, generation, is_livi
 ('bbbbbbbb-0033-4000-b000-000000000033', 'P033', 'Đặng Văn Hùng', 1, 4, true, 1950, NULL, NULL, 'Con thứ ông Tài.', 0),
 ('bbbbbbbb-0034-4000-b000-000000000034', 'P034', 'Đặng Thị Phượng', 2, 4, true, 1947, NULL, NULL, 'Con gái ông Đức.', 0);
 
--- Đời 5: 3 chút
+-- Đời 5: 5 chút
 INSERT INTO public.people (id, handle, display_name, gender, generation, is_living, birth_year, biography, privacy_level) VALUES
 ('bbbbbbbb-0041-4000-b000-000000000041', 'P041', 'Đặng Văn An', 1, 5, true, 1975, 'Con ông Minh. Kỹ sư CNTT.', 0),
 ('bbbbbbbb-0042-4000-b000-000000000042', 'P042', 'Đặng Thị Bình', 2, 5, true, 1978, 'Con gái ông Minh.', 0),
-('bbbbbbbb-0043-4000-b000-000000000043', 'P043', 'Đặng Văn Cường', 1, 5, true, 1980, 'Con ông Hùng.', 0);
+('bbbbbbbb-0043-4000-b000-000000000043', 'P043', 'Đặng Văn Cường', 1, 5, true, 1980, 'Con ông Hùng.', 0),
+('bbbbbbbb-0044-4000-b000-000000000044', 'P044', 'Nguyễn Thị Dung', 2, 5, true, 1977, 'Vợ anh An.', 0),
+('bbbbbbbb-0045-4000-b000-000000000045', 'P045', 'Trần Thị Hạnh', 2, 5, true, 1982, 'Vợ anh Cường.', 0),
+('bbbbbbbb-0046-4000-b000-000000000046', 'P046', 'Đặng Văn Dũng', 1, 5, true, 1983, 'Con thứ ông Hùng.', 0),
+('bbbbbbbb-0047-4000-b000-000000000047', 'P047', 'Phạm Thị Nga', 2, 5, true, 1985, 'Vợ anh Dũng.', 0);
+
+-- Đời 6: 4 chít
+INSERT INTO public.people (id, handle, display_name, gender, generation, is_living, birth_year, biography, privacy_level) VALUES
+('bbbbbbbb-0051-4000-b000-000000000051', 'P051', 'Đặng Văn Tuấn', 1, 6, true, 2000, 'Con anh An.', 0),
+('bbbbbbbb-0052-4000-b000-000000000052', 'P052', 'Đặng Thị Linh', 2, 6, true, 2003, 'Con gái anh An.', 0),
+('bbbbbbbb-0053-4000-b000-000000000053', 'P053', 'Đặng Văn Phong', 1, 6, true, 2002, 'Con anh Cường.', 0),
+('bbbbbbbb-0054-4000-b000-000000000054', 'P054', 'Đặng Văn Khoa', 1, 6, true, 2005, 'Con anh Dũng.', 0);
 
 -- ─── Families ─────────────────────────────────────────────────────────────
 
@@ -149,7 +160,11 @@ INSERT INTO public.families (id, handle, father_id, mother_id, marriage_date, so
 ('cccccccc-0002-4000-c000-000000000002', 'F002', 'bbbbbbbb-0011-4000-b000-000000000011', 'bbbbbbbb-0012-4000-b000-000000000012', '1908-01-01', 1),
 ('cccccccc-0003-4000-c000-000000000003', 'F003', 'bbbbbbbb-0013-4000-b000-000000000013', 'bbbbbbbb-0014-4000-b000-000000000014', '1912-01-01', 2),
 ('cccccccc-0004-4000-c000-000000000004', 'F004', 'bbbbbbbb-0021-4000-b000-000000000021', 'bbbbbbbb-0022-4000-b000-000000000022', '1938-01-01', 1),
-('cccccccc-0005-4000-c000-000000000005', 'F005', 'bbbbbbbb-0031-4000-b000-000000000031', 'bbbbbbbb-0032-4000-b000-000000000032', '1970-01-01', 1);
+('cccccccc-0005-4000-c000-000000000005', 'F005', 'bbbbbbbb-0031-4000-b000-000000000031', 'bbbbbbbb-0032-4000-b000-000000000032', '1970-01-01', 1),
+('cccccccc-0006-4000-c000-000000000006', 'F006', 'bbbbbbbb-0033-4000-b000-000000000033', NULL, '1975-01-01', 2),
+('cccccccc-0007-4000-c000-000000000007', 'F007', 'bbbbbbbb-0041-4000-b000-000000000041', 'bbbbbbbb-0044-4000-b000-000000000044', '2000-01-01', 1),
+('cccccccc-0008-4000-c000-000000000008', 'F008', 'bbbbbbbb-0043-4000-b000-000000000043', 'bbbbbbbb-0045-4000-b000-000000000045', '2005-01-01', 1),
+('cccccccc-0009-4000-c000-000000000009', 'F009', 'bbbbbbbb-0046-4000-b000-000000000046', 'bbbbbbbb-0047-4000-b000-000000000047', '2008-01-01', 2);
 
 -- ─── Children ─────────────────────────────────────────────────────────────
 
@@ -166,11 +181,19 @@ INSERT INTO public.children (family_id, person_id, sort_order) VALUES
 -- Đời 3 (Tài) → Đời 4
 ('cccccccc-0004-4000-c000-000000000004', 'bbbbbbbb-0031-4000-b000-000000000031', 1),
 ('cccccccc-0004-4000-c000-000000000004', 'bbbbbbbb-0033-4000-b000-000000000033', 2),
--- Đời 3 (Đức) → Đời 4
--- (Đức chưa có family record — Phượng là con gái, tạm gắn qua Tài family)
+-- Đời 4 (Hùng) → Đời 5
+('cccccccc-0006-4000-c000-000000000006', 'bbbbbbbb-0043-4000-b000-000000000043', 1),
+('cccccccc-0006-4000-c000-000000000006', 'bbbbbbbb-0046-4000-b000-000000000046', 2),
 -- Đời 4 (Minh) → Đời 5
 ('cccccccc-0005-4000-c000-000000000005', 'bbbbbbbb-0041-4000-b000-000000000041', 1),
-('cccccccc-0005-4000-c000-000000000005', 'bbbbbbbb-0042-4000-b000-000000000042', 2);
+('cccccccc-0005-4000-c000-000000000005', 'bbbbbbbb-0042-4000-b000-000000000042', 2),
+-- Đời 5 (An) → Đời 6
+('cccccccc-0007-4000-c000-000000000007', 'bbbbbbbb-0051-4000-b000-000000000051', 1),
+('cccccccc-0007-4000-c000-000000000007', 'bbbbbbbb-0052-4000-b000-000000000052', 2),
+-- Đời 5 (Cường) → Đời 6
+('cccccccc-0008-4000-c000-000000000008', 'bbbbbbbb-0053-4000-b000-000000000053', 1),
+-- Đời 5 (Dũng) → Đời 6
+('cccccccc-0009-4000-c000-000000000009', 'bbbbbbbb-0054-4000-b000-000000000054', 1);
 
 -- ─── Events (Ngày giỗ) ───────────────────────────────────────────────────
 

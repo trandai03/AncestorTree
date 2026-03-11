@@ -2,8 +2,8 @@
 project: AncestorTree
 path: CLAUDE.md
 type: agent-guidelines
-version: 2.4.1
-updated: 2026-03-02
+version: 2.5.0
+updated: 2026-03-09
 ---
 
 # CLAUDE.md
@@ -15,7 +15,7 @@ This file provides guidance to AI assistants (Claude, GPT, etc.) when working wi
 **AncestorTree** (Gia Phả Điện Tử) is a digital family tree management system for Chi tộc Đặng Đình, Thạch Lâm, Hà Tĩnh.
 
 - **Repository:** https://github.com/Minh-Tam-Solution/AncestorTree
-- **Current Version:** v2.4.1 (Profile, MFA, Backup, Docker & Bulk Admin Actions)
+- **Current Version:** v2.5.0 (Cộng đồng & Nâng cao — Feed, Search, GEDCOM 7.0, Notifications, Nhà thờ họ, SEO)
 - **SDLC Tier:** LITE (5 stages)
 - **Tech Stack:** Next.js 16, React 19, Tailwind CSS 4, Supabase, Electron 34 (desktop)
 - **Built with:** [TinySDLC](https://github.com/Minh-Tam-Solution/tinysdlc) + [MTS-SDLC-Lite](https://github.com/Minh-Tam-Solution/MTS-SDLC-Lite)
@@ -88,11 +88,15 @@ AncestorTree/
 │   │       ├── documents/book/     # Gia phả sách (Sprint 5)
 │   │       ├── documents/library/ # Kho tài liệu (Sprint 11)
 │   │       ├── events/             # Lịch sự kiện (Sprint 4)
+│   │       ├── feed/              # Góc giao lưu (Sprint 15)
 │   │       ├── fund/               # Quỹ khuyến học (Sprint 6)
 │   │       ├── help/               # Hướng dẫn sử dụng (Sprint 11)
+│   │       ├── notifications/     # Thông báo (Sprint 16)
 │   │       ├── people/             # Quản lý thành viên
+│   │       ├── relationship/      # Tìm quan hệ (Sprint 13)
 │   │       ├── settings/profile/   # Hồ sơ tài khoản (Sprint 12)
 │   │       ├── settings/security/  # Bảo mật MFA (Sprint 12)
+│   │       ├── stats/             # Thống kê (Sprint 13)
 │   │       ├── tree/               # Cây gia phả
 │   │       └── admin/              # Admin panel
 │   │           ├── achievements/   # QL Vinh danh (Sprint 6)
@@ -101,13 +105,17 @@ AncestorTree/
 │   │           ├── contributions/  # QL Đóng góp (Sprint 4)
 │   │           ├── backup/         # Sao lưu & Phục hồi (Sprint 12)
 │   │           ├── documents/      # QL Tài liệu (Sprint 11)
+│   │           ├── duplicates/    # QL Trùng lặp (Sprint 14)
+│   │           ├── feed/          # QL Bài viết (Sprint 15)
 │   │           ├── fund/           # QL Quỹ & Học bổng (Sprint 6)
+│   │           ├── registrations/ # QL Đơn ghi danh (Sprint 18)
 │   │           ├── settings/       # Cài đặt dòng họ
 │   │           └── users/          # QL Người dùng (verify/suspend/delete + bulk actions)
 │   ├── src/components/             # React components
 │   │   ├── ui/                     # shadcn/ui components
 │   │   ├── auth/                   # Auth components (auth-provider, verification-guard)
 │   │   ├── layout/                 # Layout components (sidebar, header)
+│   │   ├── feed/                   # Feed components (post-card, compose-box, comments)
 │   │   ├── home/                   # Homepage components (featured-charter)
 │   │   └── people/                 # People components (person-form, family-relations-card)
 │   ├── src/hooks/                  # Custom React hooks
@@ -117,11 +125,15 @@ AncestorTree/
 │   │   ├── use-contributions.ts    # Contribution hooks (Sprint 4)
 │   │   ├── use-events.ts           # Event hooks (Sprint 4)
 │   │   ├── use-families.ts         # Family relations hooks (Sprint 7.5)
+│   │   ├── use-feed.ts             # Feed posts/comments/likes hooks (Sprint 15)
+│   │   ├── use-fuzzy-search.ts    # Fuse.js fuzzy search hook (Sprint 18)
 │   │   ├── use-backup-schedule.ts   # Backup schedule hooks (Sprint 12)
 │   │   ├── use-clan-settings.ts    # Clan settings hooks (Sprint 12)
 │   │   ├── use-documents.ts        # Document CRUD hooks (Sprint 11)
 │   │   ├── use-fund.ts             # Fund & scholarship hooks (Sprint 6)
-│   │   └── use-profiles.ts         # User management hooks (Sprint 12)
+│   │   ├── use-notifications.ts   # Notification hooks (Sprint 16)
+│   │   ├── use-profiles.ts         # User management hooks (Sprint 12)
+│   │   └── use-registrations.ts   # Registration hooks (Sprint 18)
 │   ├── src/lib/                    # Utilities, Supabase client
 │   │   ├── supabase.ts             # Supabase client init
 │   │   ├── supabase-data.ts        # Core data layer (people, families)
@@ -130,12 +142,15 @@ AncestorTree/
 │   │   ├── supabase-data-charter.ts        # Charter data (Sprint 6)
 │   │   ├── supabase-data-clan-settings.ts # Clan settings data (Sprint 12)
 │   │   ├── supabase-data-documents.ts     # Document data (Sprint 11)
+│   │   ├── supabase-data-feed.ts          # Feed data (Sprint 15)
 │   │   ├── supabase-data-fund.ts          # Fund & scholarship data (Sprint 6)
+│   │   ├── supabase-data-notifications.ts # Notification data (Sprint 16)
+│   │   ├── supabase-data-registrations.ts # Registration data (Sprint 18)
 │   │   └── lunar-calendar.ts       # Lunar-solar conversion (Sprint 4)
 │   ├── src/types/                  # TypeScript types
 │   │   └── index.ts                # All type definitions
 │   └── supabase/                   # Database migrations
-│       ├── migrations/             # Timestamped migration files (11)
+│       ├── migrations/             # Timestamped migration files (17)
 │       ├── config.toml             # Supabase CLI config (ports, storage, SMTP)
 │       └── seed.sql                # Demo data: 18 thành viên 5 đời
 ├── desktop/                        # Electron desktop app (Sprint 9)
@@ -148,11 +163,15 @@ AncestorTree/
 │   │   ├── 001-initial-schema.sql  # 13 tables (ported from PG)
 │   │   ├── 002-seed-demo-data.sql  # Demo: 18 thành viên, 5 đời
 │   │   ├── 003-clan-documents.sql  # Kho tài liệu (Sprint 11)
-│   │   └── 004-sprint12-verification.sql  # Verification + privacy (Sprint 12)
+│   │   ├── 004-sprint12-verification.sql  # Verification + privacy (Sprint 12)
+│   │   ├── 005-sprint15-feed.sql  # Góc giao lưu (Sprint 15)
+│   │   ├── 006-sprint16-notifications.sql # Thông báo (Sprint 16)
+│   │   ├── 007-sprint17-export-import.sql # Export/Import (Sprint 17)
+│   │   └── 009-sprint18-registrations.sql # Đơn ghi danh (Sprint 18)
 │   ├── electron-builder.yml        # Cross-platform build config
 │   ├── package.json                # Electron + sql.js deps
 │   └── tsconfig.json
-├── docker-compose.yml              # Docker deployment (v2.4)
+├── docker-compose.yml              # Docker deployment (v2.5)
 ├── .sdlc-config.json               # SDLC configuration
 ├── CLAUDE.md                       # AI assistant guidelines
 └── README.md                       # Project overview
@@ -160,7 +179,7 @@ AncestorTree/
 
 ## Database Schema
 
-15 tables across 6 layers (profiles extended with verification in Sprint 12):
+22 tables across 9 layers:
 
 | Layer | Tables | Migration File |
 |-------|--------|----------------|
@@ -170,6 +189,9 @@ AncestorTree/
 | **Ceremony (v1.4)** | `cau_duong_pools`, `cau_duong_assignments` | `cau-duong-migration.sql` |
 | **Documents (v2.2)** | `clan_documents` | `sprint11-kho-tai-lieu.sql` |
 | **Settings (v2.3)** | `clan_settings` | `clan-settings.sql` |
+| **Feed (v2.5)** | `posts`, `post_likes`, `post_comments` | `sprint15-feed.sql` |
+| **Notifications (v2.5)** | `notifications` | `sprint16-notifications.sql` |
+| **Registration (v2.5)** | `member_registrations` | `sprint18-registrations.sql` |
 
 All tables have RLS policies with 4 roles: `admin`, `editor`, `viewer`, `guest`.
 
@@ -315,6 +337,29 @@ chore/upgrade-deps
 | Admin Users (Bulk) | `frontend/src/app/(main)/admin/users/page.tsx` |
 | Local Setup Script | `frontend/scripts/local-setup.mjs` |
 | Sprint 13 Spec | `docs/04-build/SPRINT-13-SPEC.md` |
+| Sprint 14 Spec | `docs/04-build/SPRINT-14-SPEC.md` |
+| Feed Page | `frontend/src/app/(main)/feed/page.tsx` |
+| Admin Feed | `frontend/src/app/(main)/admin/feed/page.tsx` |
+| Feed Data | `frontend/src/lib/supabase-data-feed.ts` |
+| Feed Hooks | `frontend/src/hooks/use-feed.ts` |
+| Feed Migration | `frontend/supabase/migrations/20260312000013_sprint15_feed.sql` |
+| Sprint 13 Migration | `frontend/supabase/migrations/20260310000011_sprint13_search_stats.sql` |
+| Sprint 14 Migration | `frontend/supabase/migrations/20260310000012_sprint14_gedcom_duplicate_elderly.sql` |
+| Notifications Page | `frontend/src/app/(main)/notifications/page.tsx` |
+| Notification Bell | `frontend/src/components/layout/notification-bell.tsx` |
+| Notifications Data | `frontend/src/lib/supabase-data-notifications.ts` |
+| Notifications Hooks | `frontend/src/hooks/use-notifications.ts` |
+| Notifications Migration | `frontend/supabase/migrations/20260315000016_sprint16_notifications.sql` |
+| Export/Import Migration | `frontend/supabase/migrations/20260317000017_sprint17_export_import.sql` |
+| Council Page | `frontend/src/app/(landing)/council/page.tsx` |
+| Ancestral Hall Page | `frontend/src/app/(landing)/ancestral-hall/page.tsx` |
+| Register Member Page | `frontend/src/app/(landing)/register-member/page.tsx` |
+| Admin Registrations | `frontend/src/app/(main)/admin/registrations/page.tsx` |
+| Registrations Data | `frontend/src/lib/supabase-data-registrations.ts` |
+| Registrations Hooks | `frontend/src/hooks/use-registrations.ts` |
+| Fuzzy Search Hook | `frontend/src/hooks/use-fuzzy-search.ts` |
+| Sitemap | `frontend/src/app/sitemap.ts` |
+| Sprint 18 Migration | `frontend/supabase/migrations/20260320000018_sprint18_registrations.sql` |
 
 ## Common Tasks
 

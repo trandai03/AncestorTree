@@ -11,6 +11,7 @@
 import { useState, useMemo } from 'react';
 import { useAuth } from '@/components/auth/auth-provider';
 import { usePeople, useStats } from '@/hooks/use-people';
+import { useFuzzySearch } from '@/hooks/use-fuzzy-search';
 import { PersonCard } from '@/components/people/person-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -41,33 +42,23 @@ export default function PeoplePage() {
     return [...new Set(people.filter(p => p.chi).map(p => p.chi!))].sort((a, b) => a - b);
   }, [people]);
 
-  // Filter people
+  // Fuzzy search (Fuse.js) — diacritics-tolerant, multi-field
+  const fuzzyResults = useFuzzySearch(people, search);
+
+  // Apply dropdown filters on top of fuzzy results
   const filteredPeople = useMemo(() => {
-    if (!people) return [];
-    
-    return people.filter(person => {
-      // Search filter
-      if (search && !person.display_name.toLowerCase().includes(search.toLowerCase())) {
-        return false;
-      }
-      
-      // Generation filter
+    return fuzzyResults.filter(person => {
       if (generationFilter !== 'all' && person.generation !== parseInt(generationFilter)) {
         return false;
       }
-      
-      // Chi filter
       if (chiFilter !== 'all' && person.chi !== parseInt(chiFilter)) {
         return false;
       }
-      
-      // Status filter
       if (statusFilter === 'living' && !person.is_living) return false;
       if (statusFilter === 'deceased' && person.is_living) return false;
-      
       return true;
     });
-  }, [people, search, generationFilter, chiFilter, statusFilter]);
+  }, [fuzzyResults, generationFilter, chiFilter, statusFilter]);
 
   const hasFilters = search || generationFilter !== 'all' || chiFilter !== 'all' || statusFilter !== 'all';
 

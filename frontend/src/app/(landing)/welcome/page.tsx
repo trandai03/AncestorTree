@@ -12,7 +12,8 @@ import {
   GitBranch, Calendar, Users, Shield, Bug, LogIn,
   Lightbulb, MessageCircle, Code2, Heart,
   ChevronRight, Award, BookOpen, Utensils, Clock, Rocket,
-  Mail, Phone, UserCheck,
+  Mail, Phone, UserCheck, MessageSquare, Route, BarChart3,
+  Bell, Landmark, UserPlus, Search, FileDown,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -99,6 +100,62 @@ const features = [
     color: 'text-slate-600',
     bg: 'bg-slate-50',
   },
+  {
+    icon: MessageSquare,
+    title: 'Góc giao lưu',
+    desc: 'Feed bài viết, bình luận, thả tim, upload ảnh (tối đa 5/bài), lọc theo loại, moderation.',
+    color: 'text-indigo-600',
+    bg: 'bg-indigo-50',
+  },
+  {
+    icon: Route,
+    title: 'Tìm quan hệ',
+    desc: 'BFS pathfinding tìm đường quan hệ giữa 2 thành viên bất kỳ trong gia phả.',
+    color: 'text-cyan-600',
+    bg: 'bg-cyan-50',
+  },
+  {
+    icon: BarChart3,
+    title: 'Thống kê nâng cao',
+    desc: 'Dashboard biểu đồ phân bố đời, giới tính, còn sống/mất với Recharts.',
+    color: 'text-violet-600',
+    bg: 'bg-violet-50',
+  },
+  {
+    icon: FileDown,
+    title: 'Export & Import đa dạng',
+    desc: 'GEDCOM 7.0, CSV, Markdown, PDF — xuất/nhập dữ liệu gia phả linh hoạt.',
+    color: 'text-teal-600',
+    bg: 'bg-teal-50',
+  },
+  {
+    icon: Bell,
+    title: 'Thông báo thời gian thực',
+    desc: 'Bell icon + 6 loại thông báo tự động qua DB triggers khi có bình luận, thích bài.',
+    color: 'text-red-600',
+    bg: 'bg-red-50',
+  },
+  {
+    icon: Landmark,
+    title: 'Nhà thờ họ & Hội đồng',
+    desc: 'Trang công khai giới thiệu nhà thờ (gallery, bản đồ) và ban quản trị dòng họ.',
+    color: 'text-yellow-600',
+    bg: 'bg-yellow-50',
+  },
+  {
+    icon: UserPlus,
+    title: 'Đăng ký thành viên online',
+    desc: 'Con cháu sống xa ghi danh trực tuyến, admin duyệt đơn. Honeypot chống spam.',
+    color: 'text-lime-600',
+    bg: 'bg-lime-50',
+  },
+  {
+    icon: Search,
+    title: 'Tìm kiếm thông minh & SEO',
+    desc: 'Fuzzy search (Fuse.js) hỗ trợ dấu tiếng Việt. Sitemap, Open Graph cho trang public.',
+    color: 'text-sky-600',
+    bg: 'bg-sky-50',
+  },
 ];
 
 const techStack = [
@@ -119,7 +176,7 @@ export default function WelcomePage() {
         </div>
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 text-center">
           <Badge variant="secondary" className="mb-6 text-sm px-4 py-1">
-            Open Source &middot; MIT License &middot; v2.4.0
+            Open Source &middot; MIT License &middot; v2.5.0
           </Badge>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4">
             Gia Phả Điện Tử
@@ -142,12 +199,20 @@ export default function WelcomePage() {
             </Button>
           </div>
           <div className="mt-6">
-            <Button variant="link" className="text-emerald-200 hover:text-white" asChild>
-              <Link href="/login">
-                <LogIn className="mr-2 h-4 w-4" />
-                Con cháu họ Đặng làng Kỷ Các — Đăng nhập
-              </Link>
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button variant="link" className="text-emerald-200 hover:text-white" asChild>
+                <Link href="/login">
+                  <LogIn className="mr-2 h-4 w-4" />
+                  Đăng nhập
+                </Link>
+              </Button>
+              <span className="text-emerald-400">|</span>
+              <Button variant="link" className="text-emerald-200 hover:text-white" asChild>
+                <Link href="/register">
+                  Đăng ký
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -231,11 +296,16 @@ export default function WelcomePage() {
                 { name: 'Thành viên', desc: 'Quản lý thành viên' },
                 { name: 'Thư mục', desc: 'Danh bạ liên lạc' },
                 { name: 'Sự kiện', desc: 'Ngày giỗ, lễ tết' },
+                { name: 'Góc giao lưu', desc: 'Feed, bình luận, ảnh' },
+                { name: 'Tìm quan hệ', desc: 'Pathfinding 2 người' },
+                { name: 'Thống kê', desc: 'Biểu đồ, phân tích' },
+                { name: 'Thông báo', desc: 'Cập nhật realtime' },
                 { name: 'Vinh danh', desc: 'Thành tích con cháu' },
                 { name: 'Quỹ khuyến học', desc: 'Thu chi, học bổng' },
                 { name: 'Hương ước', desc: 'Gia huấn, quy ước' },
                 { name: 'Cầu đương', desc: 'Phân công cúng lễ' },
-                { name: 'Gia phả sách', desc: 'Xuất dạng sách' },
+                { name: 'Kho tài liệu', desc: 'Ảnh, PDF, video' },
+                { name: 'Xuất/Nhập', desc: 'GEDCOM, CSV, PDF' },
                 { name: 'Quản trị', desc: 'Cài đặt hệ thống' },
               ].map((item) => (
                 <div key={item.name} className="bg-white rounded-lg px-4 py-3 border shadow-sm">
@@ -605,7 +675,7 @@ export default function WelcomePage() {
             <div className="flex items-center gap-2">
               <span className="text-lg">🌳</span>
               <span className="font-semibold text-gray-700">AncestorTree</span>
-              <span className="text-gray-400">v2.4.0</span>
+              <span className="text-gray-400">v2.5.0</span>
             </div>
             <div className="flex items-center gap-4">
               <a href={GITHUB_REPO} target="_blank" rel="noopener noreferrer" className="hover:text-gray-700">

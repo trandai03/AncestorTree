@@ -48,10 +48,10 @@ win:
   # Set environment variables before building:
   #   CSC_LINK=path/to/ancestortree-codesign.pfx
   #   CSC_KEY_PASSWORD=your-pfx-password
-  signingHashAlgorithms:
-    - sha256
-  sign: null  # use default Windows signtool via electron-builder
-  publisherName: Minh-Tam-Solution
+  signtoolOptions:
+    signingHashAlgorithms:
+      - sha256
+    publisherName: Minh-Tam-Solution
 
 nsis:
   oneClick: false

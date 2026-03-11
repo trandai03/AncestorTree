@@ -1,8 +1,11 @@
 # AncestorTree — robots.txt
-# Allow landing page, disallow authenticated routes
+# Allow public/landing pages, disallow authenticated routes
 
 User-agent: *
 Allow: /welcome
+Allow: /council
+Allow: /ancestral-hall
+Allow: /register-member
 Disallow: /people
 Disallow: /tree
 Disallow: /directory
@@ -18,3 +21,10 @@ Disallow: /cau-duong
 Disallow: /contributions
 Disallow: /documents
 Disallow: /fund
+Disallow: /feed
+Disallow: /notifications
+Disallow: /settings
+Disallow: /relationship
+Disallow: /stats
+
+Sitemap: https://ancestortree.info/sitemap.xml

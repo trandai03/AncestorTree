@@ -41,7 +41,10 @@ import {
 } from 'lucide-react';
 import type { Person } from '@/types';
 import type { TreeData } from '@/lib/supabase-data';
+import { exportTreeToPdf, getExportWarning } from '@/lib/pdf-export';
 import Link from 'next/link';
+import { FileDown, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Constants
@@ -222,7 +225,7 @@ function Minimap({ nodes, viewBox, treeWidth, treeHeight, onViewportClick }: Min
   const visibleNodes = nodes.filter(n => n.isVisible);
 
   return (
-    <div className="absolute bottom-4 right-4 bg-background/90 border rounded-lg p-2 shadow-lg">
+    <div className="absolute bottom-4 right-4 bg-background/90 border rounded-lg p-2 shadow-lg" data-html2canvas-ignore="true">
       <svg
         width={MINIMAP_WIDTH}
         height={MINIMAP_HEIGHT}
@@ -635,6 +638,7 @@ export function FamilyTree() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 });
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
 
   // Track container size via ResizeObserver (avoids reading refs during render)
   const containerCallbackRef = useCallback((node: HTMLDivElement | null) => {
@@ -656,6 +660,30 @@ export function FamilyTree() {
     if (!data || data.people.length === 0) return null;
     return buildTreeLayout(data, collapsedNodes, viewMode, selectedPerson?.id || null, filterRootId);
   }, [data, collapsedNodes, viewMode, selectedPerson?.id, filterRootId]);
+
+  // PDF export handler
+  const handleExportPdf = useCallback(async () => {
+    if (!containerRef.current || !layout) return;
+
+    const warning = getExportWarning(layout.nodes.length);
+    if (warning && layout.nodes.length > 100) {
+      toast.warning(warning);
+      return;
+    }
+    if (warning) toast.info(warning);
+
+    setIsExportingPdf(true);
+    try {
+      await exportTreeToPdf(containerRef.current, {
+        pageSize: layout.nodes.length > 30 ? 'a2' : 'a3',
+      });
+      toast.success('Xuất PDF thành công');
+    } catch {
+      toast.error('Lỗi khi xuất PDF');
+    } finally {
+      setIsExportingPdf(false);
+    }
+  }, [layout]);
 
   // Handlers
   const handleZoomIn = () => setScale((s) => Math.min(s + 0.1, 2));
@@ -954,6 +982,22 @@ export function FamilyTree() {
         >
           <Maximize2 className="h-4 w-4 mr-2" />
           Minimap
+        </Button>
+
+        {/* PDF export */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleExportPdf}
+          disabled={isExportingPdf || !layout}
+          className="hidden md:flex"
+        >
+          {isExportingPdf ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <FileDown className="h-4 w-4 mr-2" />
+          )}
+          PDF
         </Button>
 
         {/* Pan indicator */}

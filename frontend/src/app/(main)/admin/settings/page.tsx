@@ -19,14 +19,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Settings, Globe, Database, Save, Loader2 } from 'lucide-react';
+import { Settings, Globe, Database, Save, Loader2, Users, Landmark, Plus, Trash2, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { CLAN_NAME as ENV_CLAN_NAME, CLAN_FULL_NAME as ENV_CLAN_FULL_NAME } from '@/lib/clan-config';
-import type { UpdateClanSettingsInput } from '@/types';
+import type { UpdateClanSettingsInput, CouncilMember, CeremonyScheduleItem } from '@/types';
 
 const isDesktop = process.env.NEXT_PUBLIC_DESKTOP_MODE === 'true';
-const APP_VERSION = 'v2.2.1';
+const APP_VERSION = 'v3.0.0';
 
 function deriveInitial(name: string): string {
   const parts = name.trim().split(' ');
@@ -51,6 +51,13 @@ export default function AdminSettingsPage() {
   const [description, setDescription] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [contactPhone, setContactPhone] = useState('');
+  // Sprint 18: Council + Ancestral Hall
+  const [councilMembers, setCouncilMembers] = useState<CouncilMember[]>([]);
+  const [clanHistory, setClanHistory] = useState('');
+  const [clanMission, setClanMission] = useState('');
+  const [hallAddress, setHallAddress] = useState('');
+  const [hallHistory, setHallHistory] = useState('');
+  const [ceremonies, setCeremonies] = useState<CeremonyScheduleItem[]>([]);
 
   useEffect(() => {
     if (!clanSettings) return;
@@ -62,6 +69,12 @@ export default function AdminSettingsPage() {
     setDescription(clanSettings.clan_description ?? '');
     setContactEmail(clanSettings.contact_email ?? '');
     setContactPhone(clanSettings.contact_phone ?? '');
+    setCouncilMembers((clanSettings.council_members as CouncilMember[]) ?? []);
+    setClanHistory(clanSettings.clan_history ?? '');
+    setClanMission(clanSettings.clan_mission ?? '');
+    setHallAddress(clanSettings.ancestral_hall_address ?? '');
+    setHallHistory(clanSettings.ancestral_hall_history ?? '');
+    setCeremonies((clanSettings.ceremony_schedule as CeremonyScheduleItem[]) ?? []);
   }, [clanSettings]);
 
   if (!isEditor) {
@@ -97,6 +110,12 @@ export default function AdminSettingsPage() {
       clan_description: description.trim() || undefined,
       contact_email: contactEmail.trim() || undefined,
       contact_phone: contactPhone.trim() || undefined,
+      council_members: councilMembers.filter(m => m.name.trim()),
+      clan_history: clanHistory.trim() || undefined,
+      clan_mission: clanMission.trim() || undefined,
+      ancestral_hall_address: hallAddress.trim() || undefined,
+      ancestral_hall_history: hallHistory.trim() || undefined,
+      ceremony_schedule: ceremonies.filter(c => c.title.trim()),
     };
     try {
       await updateMutation.mutateAsync({ id: clanSettings.id, input });
@@ -252,6 +271,210 @@ export default function AdminSettingsPage() {
               </Button>
             </form>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Council members */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Hội đồng gia tộc
+          </CardTitle>
+          <CardDescription>
+            Thành viên ban quản trị hiển thị trên trang công khai /council
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {councilMembers.map((m, i) => (
+            <div key={i} className="flex gap-2 items-start">
+              <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <Input
+                  placeholder="Họ tên"
+                  value={m.name}
+                  onChange={e => {
+                    const updated = [...councilMembers];
+                    updated[i] = { ...updated[i], name: e.target.value };
+                    setCouncilMembers(updated);
+                  }}
+                />
+                <Input
+                  placeholder="Chức vụ"
+                  value={m.title}
+                  onChange={e => {
+                    const updated = [...councilMembers];
+                    updated[i] = { ...updated[i], title: e.target.value };
+                    setCouncilMembers(updated);
+                  }}
+                />
+                <Input
+                  placeholder="Điện thoại (tùy chọn)"
+                  value={m.phone ?? ''}
+                  onChange={e => {
+                    const updated = [...councilMembers];
+                    updated[i] = { ...updated[i], phone: e.target.value || undefined };
+                    setCouncilMembers(updated);
+                  }}
+                />
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-9 w-9 p-0 text-muted-foreground hover:text-destructive shrink-0"
+                onClick={() => setCouncilMembers(councilMembers.filter((_, j) => j !== i))}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setCouncilMembers([...councilMembers, { name: '', title: '' }])}
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Thêm thành viên
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* History + Mission */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Globe className="h-4 w-4" />
+            Lịch sử & Sứ mệnh
+          </CardTitle>
+          <CardDescription>
+            Hiển thị trên trang Hội đồng gia tộc (/council)
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label>Lịch sử dòng họ</Label>
+            <Textarea
+              value={clanHistory}
+              onChange={e => setClanHistory(e.target.value)}
+              rows={4}
+              placeholder="Nguồn gốc, lịch sử phát triển dòng họ..."
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <Label>Sứ mệnh & Tầm nhìn</Label>
+            <Textarea
+              value={clanMission}
+              onChange={e => setClanMission(e.target.value)}
+              rows={3}
+              placeholder="Sứ mệnh gìn giữ và phát triển..."
+              className="mt-1"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Ancestral Hall */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Landmark className="h-4 w-4" />
+            Nhà thờ họ
+          </CardTitle>
+          <CardDescription>
+            Thông tin nhà thờ hiển thị trên /ancestral-hall
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <Label>Địa chỉ nhà thờ</Label>
+            <Input
+              value={hallAddress}
+              onChange={e => setHallAddress(e.target.value)}
+              placeholder="Xã Thạch Lâm, Thạch Hà, Hà Tĩnh"
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <Label>Lịch sử nhà thờ</Label>
+            <Textarea
+              value={hallHistory}
+              onChange={e => setHallHistory(e.target.value)}
+              rows={3}
+              placeholder="Lịch sử xây dựng, trùng tu nhà thờ..."
+              className="mt-1"
+            />
+          </div>
+
+          {/* Ceremony schedule */}
+          <div className="border-t pt-4 space-y-3">
+            <Label className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Lịch tế lễ hàng năm
+            </Label>
+            <p className="text-xs text-muted-foreground">Hiển thị trên trang Nhà thờ họ (/ancestral-hall)</p>
+            {ceremonies.map((c, i) => (
+              <div key={i} className="flex gap-2 items-start">
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-4 gap-2">
+                  <Input
+                    placeholder="Tên lễ"
+                    value={c.title}
+                    onChange={e => {
+                      const updated = [...ceremonies];
+                      updated[i] = { ...updated[i], title: e.target.value };
+                      setCeremonies(updated);
+                    }}
+                  />
+                  <Input
+                    placeholder="Ngày AL (VD: 15/7)"
+                    value={c.lunar_date ?? ''}
+                    onChange={e => {
+                      const updated = [...ceremonies];
+                      updated[i] = { ...updated[i], lunar_date: e.target.value || undefined };
+                      setCeremonies(updated);
+                    }}
+                  />
+                  <Input
+                    placeholder="Ngày DL (VD: 20/08)"
+                    value={c.solar_date ?? ''}
+                    onChange={e => {
+                      const updated = [...ceremonies];
+                      updated[i] = { ...updated[i], solar_date: e.target.value || undefined };
+                      setCeremonies(updated);
+                    }}
+                  />
+                  <Input
+                    placeholder="Ghi chú"
+                    value={c.description ?? ''}
+                    onChange={e => {
+                      const updated = [...ceremonies];
+                      updated[i] = { ...updated[i], description: e.target.value || undefined };
+                      setCeremonies(updated);
+                    }}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-9 w-9 p-0 text-muted-foreground hover:text-destructive shrink-0"
+                  onClick={() => setCeremonies(ceremonies.filter((_, j) => j !== i))}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setCeremonies([...ceremonies, { title: '' }])}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Thêm ngày lễ
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

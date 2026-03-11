@@ -330,6 +330,8 @@ export interface CauDuongPool {
   ancestor_id: string;
   min_generation: number;
   max_age_lunar: number;   // Tuổi âm tối đa (mặc định 70)
+  require_married: boolean; // Bắt buộc đã lập gia đình (mặc định true)
+  custom_order?: string[];  // Thứ tự xoay vòng tùy chỉnh (person IDs)
   description?: string;
   is_active: boolean;
   created_at: string;
@@ -394,6 +396,20 @@ export interface PersonRelations {
 
 // ─── Clan Settings ────────────────────────────────────────────────────────────
 
+export interface CouncilMember {
+  name: string;
+  title: string;
+  phone?: string;
+  avatar?: string;
+}
+
+export interface CeremonyScheduleItem {
+  title: string;
+  lunar_date?: string;
+  solar_date?: string;
+  description?: string;
+}
+
 export interface ClanSettings {
   id: string;
   clan_name: string;
@@ -404,11 +420,171 @@ export interface ClanSettings {
   clan_description?: string;
   contact_email?: string;
   contact_phone?: string;
+  council_members?: CouncilMember[];
+  clan_history?: string;
+  clan_mission?: string;
+  ancestral_hall_images?: string[];
+  ancestral_hall_address?: string;
+  ancestral_hall_coordinates?: { lat: number; lng: number } | null;
+  ancestral_hall_history?: string;
+  ceremony_schedule?: CeremonyScheduleItem[];
   updated_at: string;
   updated_by?: string;
 }
 
 export type UpdateClanSettingsInput = Partial<Omit<ClanSettings, 'id' | 'updated_at' | 'updated_by'>>;
+
+// ─── Member Registration ─────────────────────────────────────────────────────
+
+export type RegistrationStatus = 'pending' | 'approved' | 'rejected';
+
+export interface MemberRegistration {
+  id: string;
+  full_name: string;
+  gender: 1 | 2;
+  birth_year?: number;
+  birth_place?: string;
+  phone?: string;
+  email?: string;
+  parent_name?: string;
+  generation?: number;
+  chi?: number;
+  relationship?: string;
+  notes?: string;
+  status: RegistrationStatus;
+  reject_reason?: string;
+  reviewed_by?: string;
+  reviewed_at?: string;
+  person_id?: string;
+  created_at: string;
+}
+
+export interface CreateRegistrationInput {
+  full_name: string;
+  gender: 1 | 2;
+  birth_year?: number;
+  birth_place?: string;
+  phone?: string;
+  email?: string;
+  parent_name?: string;
+  generation?: number;
+  chi?: number;
+  relationship?: string;
+  notes?: string;
+  honeypot?: string;
+}
+
+// ─── Duplicate Detection ─────────────────────────────────────────────────────
+
+export interface DuplicateScore {
+  name: number;       // 0-1
+  father: number;     // 0-1
+  birthYear: number;  // 0-1
+  generation: number; // 0-1
+  gender: number;     // 0-1
+  total: number;      // weighted composite 0-1
+}
+
+export interface DuplicatePair {
+  personA: Person;
+  personB: Person;
+  score: DuplicateScore;
+  level: 'HIGH' | 'MEDIUM';
+}
+
+// ─── Sprint 15: Feed ─────────────────────────────────────────────────────────
+
+export type PostType = 'general' | 'photo' | 'milestone' | 'memory' | 'announcement';
+export type PostStatus = 'published' | 'hidden';
+
+export const POST_TYPE_LABELS: Record<PostType, string> = {
+  general: 'Chung',
+  photo: 'Ảnh',
+  milestone: 'Tin vui',
+  memory: 'Kỷ niệm',
+  announcement: 'Thông báo',
+};
+
+export interface Post {
+  id: string;
+  author_id: string;
+  content: string;
+  images: string[];
+  post_type: PostType;
+  status: PostStatus;
+  likes_count: number;
+  comments_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PostComment {
+  id: string;
+  post_id: string;
+  author_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PostLike {
+  id: string;
+  post_id: string;
+  user_id: string;
+  created_at: string;
+}
+
+export type CreatePostInput = Pick<Post, 'content' | 'post_type'> & {
+  images?: string[];
+};
+
+export type UpdatePostInput = Partial<Pick<Post, 'content' | 'post_type' | 'images' | 'status'>>;
+
+export type CreateCommentInput = Pick<PostComment, 'post_id' | 'content'>;
+
+// ─── Sprint 16: Notifications ────────────────────────────────────────────────
+
+export type NotificationType =
+  | 'post_comment'
+  | 'post_like'
+  | 'new_post'
+  | 'account_verified'
+  | 'event_reminder'
+  | 'new_member'
+  | 'system';
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  type: NotificationType;
+  title: string;
+  body: string | null;
+  link: string | null;
+  is_read: boolean;
+  actor_id: string | null;
+  reference_id: string | null;
+  created_at: string;
+}
+
+export const NOTIFICATION_TYPE_ICONS: Record<string, string> = {
+  post_comment: '💬',
+  post_like: '❤️',
+  new_post: '📝',
+  account_verified: '✅',
+  event_reminder: '📅',
+  new_member: '👤',
+  system: '🔔',
+};
+
+export const NOTIFICATION_TYPE_LABELS: Record<string, string> = {
+  post_comment: 'Bình luận',
+  post_like: 'Thích',
+  new_post: 'Bài mới',
+  account_verified: 'Xác nhận',
+  event_reminder: 'Sự kiện',
+  new_member: 'Thành viên',
+  system: 'Hệ thống',
+};
 
 // ─── Zodiac ───────────────────────────────────────────────────────────────────
 
